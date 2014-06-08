@@ -2,20 +2,25 @@
  * author: ohmed
 */
 
-var fs = require("fs");
-var path = require("path");
-var argparse =  require( "argparse" );
-var uglify = require("uglify-js2");
-var spawn = require('child_process').spawn;
+var fs = require( 'fs' );
+var path = require( 'path' );
+var argparse =  require( 'argparse' );
+var uglify = require( 'uglify-js2' );
 
-function process ( fileName, inCode ) {
+function processor ( fileName, inCode ) {
 
     var output = '\n// ' + fileName + '\n\n';
+
     var exportParams = [];
     var importParams = [];
     var namespace = '';
+
     var parts;
+    var importBlock, param;
+    var importReplaceBlock;
     var i, il;
+
+    //
 
     if ( !inCode.split('namespace ')[1] || !inCode.split('namespace ')[1].split(';')[0] ) {
 
@@ -27,44 +32,43 @@ function process ( fileName, inCode ) {
 
     }
 
+    //
+
     namespace = inCode.split('namespace ')[1].split(';')[0];
     inCode = inCode.replace( 'namespace ' + namespace + ';', '' );
 
     output += '( function ( scope ) {\n\n';
 
-    //
+    // process import directive
 
     parts = inCode.split('import ');
-    var importText, param;
 
     for ( i = 1, il = parts.length; i < il; i ++ ) {
 
         param = parts[ i ].split(';')[0];
 
-        importText = 'import ' + param + ';';
+        importBlock = 'import ' + param + ';';
 
-        var impoerReplaceCode = ''
+        importReplaceBlock = ''
         + 'var ' + param + ' = scope.' + param + ';\n'
         + 'if ( !' + param + ' ) {\n'
         + '   scope.__' + param + ' = scope.__' + param + ' || [];\n'
         + '   scope.__' + param + '.push( function ( obj ) { ' + param + ' = obj; } );\n'
         + '}\n';
 
-        inCode = inCode.replace( importText, impoerReplaceCode );
+        inCode = inCode.replace( importBlock, importReplaceBlock );
 
     }
 
     output += '\n';
 
-    //
+    // process export directive
 
     parts = inCode.split('export ');
 
     for ( i = 1, il = parts.length; i < il; i ++ ) {
 
-        exportParams.push({
-            name: parts[ i ].split(' ')[0]
-        });
+        exportParams.push( parts[ i ].split(' ')[0] );
 
     }
 
@@ -77,15 +81,17 @@ function process ( fileName, inCode ) {
 
     for ( i = 0, il = exportParams.length; i < il; i ++ ) {
 
+        param = exportParams[ i ];
+
         output += '\n';
 
-        output += '    scope.' + exportParams[ i ].name + ' = '  + exportParams[ i ].name + ';\n';
+        output += '    scope.' + param + ' = '  + param + ';\n';
 
-        output += '    if ( scope.__' + exportParams[ i ].name + ' ) {\n'
-        output += '        for ( var i = 0, il = scope.__' + exportParams[ i ].name + '.length; i < il; i ++ ) {\n'
-        output += '            scope.__' + exportParams[ i ].name + '[ i ]( ' + exportParams[ i ].name + ' );\n';
+        output += '    if ( scope.__' + param + ' ) {\n'
+        output += '        for ( var i = 0, il = scope.__' + param + '.length; i < il; i ++ ) {\n'
+        output += '            scope.__' + param + '[ i ]( ' + param + ' );\n';
         output += '        }\n';
-        output += '        delete scope.__' + exportParams[ i ].name + ';\n';
+        output += '        delete scope.__' + param + ';\n';
         output += '    }\n\n';
 
     }
@@ -98,57 +104,57 @@ function process ( fileName, inCode ) {
 
 function main () {
 
-    "use strict";
-
     var parser = new argparse.ArgumentParser();
-    parser.addArgument( ['--include'], { action: 'append', required: true } );
-    parser.addArgument( ['--externs'], { action: 'append', defaultValue: ['./externs/common.js'] } );
+    parser.addArgument( ['--include'], { action: 'append', required: false } );
     parser.addArgument( ['--minify'], { action: 'storeTrue', defaultValue: false } );
-    parser.addArgument( ['--output'], { defaultValue: '../../build/NWE.min.js' } );
-    parser.addArgument( ['--sourcemaps'], { action: 'storeTrue', defaultValue: false } );
+    parser.addArgument( ['--output'], { defaultValue: '../build/out.js' } );
     
     var args = parser.parseArgs();
     
     var output = args.output;
     console.log( ' * Building ' + output );
-    
-    var sourcemap = '';
-    var sourcemapping = '';
-
-    if ( args.sourcemaps ) {
-
-        sourcemap = output + '.map';
-        sourcemapping = '\n//@ sourceMappingURL=' + sourcemap;
-
-    }
 
     var buffer = [],
         sources = [],
 
-        contents, files, file,
+        contents, files, file, data,
 
         i, il,
         j, jl;
 
-    for ( i = 0, il = args.include.length; i < il; i ++ ){
-        
-        contents = fs.readFileSync( './includes/' + args.include[i] + '.json', 'utf8' );
+    args.include = args.include || [ 'common' ];
+
+    for ( i = 0, il = args.include.length; i < il; i ++ ) {
+
+        if ( args.include[i].indexOf('/') !== -1 ) {
+
+            contents = fs.readFileSync( args.include[i], 'utf8' );
+
+        } else {
+
+            contents = fs.readFileSync( './includes/' + args.include[i] + '.json', 'utf8' );
+
+        }
+
         files = JSON.parse( contents );
-        var data = '';
 
         for ( j = 0, jl = files.length; j < jl; j ++ ){
 
-            file = '../../' + files[ j ];
+            filepath = args.include[i].split('/');
+            filepath.pop();
+            filepath = './' + filepath.join('/') + '/';
+
+            file = filepath + files[ j ];
             sources.push( file );
             data = fs.readFileSync( file, 'utf8' );
 
-            buffer.push( process( files[ j ], data ) + '\n\n' );
+            buffer.push( processor( files[ j ], data ) + '\n\n' );
 
         }
 
     }
 
-    console.log( buffer.length );
+    console.log( 'Processed ' + buffer.length + ' files' );
     var temp = buffer.join( '' );
     
     if ( !args.minify ){
@@ -157,15 +163,9 @@ function main () {
 
     } else {
 
-        var result = uglify.minify( sources, { outSourceMap: sourcemap } );
+        var result = uglify.minify( sources, { outSourceMap: undefined } );
         
-        fs.writeFileSync( output, result.code + sourcemapping, 'utf8' );
-
-        if ( args.sourcemaps ) {
-
-            fs.writeFileSync( sourcemap, result.map, 'utf8' );
-
-        }
+        fs.writeFileSync( output.split('.js')[0] + '.min.js', result.code, 'utf8' );
 
     }
 
