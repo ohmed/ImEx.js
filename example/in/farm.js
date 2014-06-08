@@ -2,9 +2,9 @@
  * farm object
 */
 
-namespace World;
+namespace window;
 
-import Dog;
+import World.fauna.Dog;
 
 export Farm = {
 

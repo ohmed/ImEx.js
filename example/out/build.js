@@ -9,8 +9,8 @@
     
     var World = {
     
-        fauna: [],
-        flora: []
+        fauna: {},
+        flora: {}
     
     };
     
@@ -79,10 +79,10 @@
     
     
     
-    var Animal = scope.Animal;
+    var Animal = World.Animal;
     if ( !Animal ) {
-       scope.__Animal = scope.__Animal || [];
-       scope.__Animal.push( function ( obj ) { Animal = obj; } );
+       World.__Animal = World.__Animal || [];
+       World.__Animal.push( function ( obj ) { Animal = obj; } );
     }
     
     
@@ -114,7 +114,6 @@
     
     };
     
-    
     scope.Dog = Dog;
     if ( scope.__Dog ) {
         for ( var i = 0, il = scope.__Dog.length; i < il; i ++ ) {
@@ -124,7 +123,7 @@
     }
 
 
-}) ( World );
+}) ( World.fauna );
 
 
 // farm.js
@@ -138,10 +137,10 @@
     
     
     
-    var Dog = scope.Dog;
+    var Dog = World.fauna.Dog;
     if ( !Dog ) {
-       scope.__Dog = scope.__Dog || [];
-       scope.__Dog.push( function ( obj ) { Dog = obj; } );
+       World.fauna.__Dog = World.fauna.__Dog || [];
+       World.fauna.__Dog.push( function ( obj ) { Dog = obj; } );
     }
     
     
@@ -172,5 +171,5 @@
     }
 
 
-}) ( World );
+}) ( window );
 

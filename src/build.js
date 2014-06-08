@@ -16,7 +16,7 @@ function processor ( fileName, inCode ) {
     var namespace = '';
 
     var parts;
-    var importBlock, param;
+    var importBlock, param, paramScope;
     var importReplaceBlock;
     var i, il;
 
@@ -48,12 +48,14 @@ function processor ( fileName, inCode ) {
         param = parts[ i ].split(';')[0];
 
         importBlock = 'import ' + param + ';';
+        paramScope = param.replace( '.' + param.split('.')[ param.split('.').length - 1 ], '' );
+        param = param.split('.')[ param.split('.').length - 1 ];
 
         importReplaceBlock = ''
-        + 'var ' + param + ' = scope.' + param + ';\n'
+        + 'var ' + param + ' = ' + paramScope + '.' + param + ';\n'
         + 'if ( !' + param + ' ) {\n'
-        + '   scope.__' + param + ' = scope.__' + param + ' || [];\n'
-        + '   scope.__' + param + '.push( function ( obj ) { ' + param + ' = obj; } );\n'
+        + '   ' + paramScope + '.__' + param + ' = ' + paramScope + '.__' + param + ' || [];\n'
+        + '   ' + paramScope + '.__' + param + '.push( function ( obj ) { ' + param + ' = obj; } );\n'
         + '}\n';
 
         inCode = inCode.replace( importBlock, importReplaceBlock );

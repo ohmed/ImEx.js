@@ -2,9 +2,9 @@
  * Dog object, child of Animal class
 */
 
-namespace World;
+namespace World.fauna;
 
-import Animal;
+import World.Animal;
 
 export Dog = function ( name, legNum ) {
 
@@ -33,4 +33,3 @@ Dog.prototype = {
     }
 
 };
-

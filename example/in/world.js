@@ -3,7 +3,7 @@ namespace window;
 
 export World = {
 
-    fauna: [],
-    flora: []
+    fauna: {},
+    flora: {}
 
 };
