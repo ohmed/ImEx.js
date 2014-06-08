@@ -36,6 +36,7 @@ function processor ( fileName, inCode ) {
 
     namespace = inCode.split('namespace ')[1].split(';')[0];
     inCode = inCode.replace( 'namespace ' + namespace + ';', '' );
+    namespace = ( namespace === 'Global' ) ? 'window' : namespace;
 
     output += '( function ( scope ) {\n\n';
 

@@ -1,5 +1,5 @@
 
-namespace window;
+namespace Global;
 
 export World = {
 
