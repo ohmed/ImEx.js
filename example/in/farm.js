@@ -2,7 +2,7 @@
  * farm object
 */
 
-namespace window;
+namespace Global;
 
 import World.fauna.Dog;
 
