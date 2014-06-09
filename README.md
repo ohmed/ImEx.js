@@ -35,18 +35,18 @@ namespace Global;
 export World = {};
 ```
 
-####Instal####
+####Install####
 
 ```npm install imex -g```
 
 ####Compiling####
 
-Using npm:
+Using npm:<br>
 Navigate to your files folder, open your terminal/cmd<br>
-```imex --include ../example/in/include.json --out ../example/out/build.js```
+```imex --include ../example/in/include.json --out ../example/out/build.js```<br>
 Where `include.json` contains the list of files & `build.js` is the generated code destination file.
 
-Manual:
+Manual:<br>
 Execute in your cmd [in the folder of compiler util]<br>
 ```node imex.js --include ../example/in/include.json --out ../example/out/build.js```
 
