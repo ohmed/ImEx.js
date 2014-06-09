@@ -110,7 +110,7 @@ function main () {
     var parser = new argparse.ArgumentParser();
     parser.addArgument( ['--include'], { action: 'append', required: false } );
     parser.addArgument( ['--minify'], { action: 'storeTrue', defaultValue: false } );
-    parser.addArgument( ['--output'], { defaultValue: '../build/out.js' } );
+    parser.addArgument( ['--output'], { defaultValue: 'out.js' } );
     
     var args = parser.parseArgs();
     

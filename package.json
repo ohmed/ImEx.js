@@ -1,0 +1,32 @@
+{
+  "name": "imex",
+  "version": "0.0.6",
+  "description": "JavaScript import/export compiler",
+  "main": "./src/build.js",
+  "bin": "./bin/imex",
+  "dependencies": {
+    "fs": "~0.0.1",
+    "path": "~0.4.9",
+    "argparse": "~0.1.15",
+    "uglify-js2": "~2.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ohmed/ImEx.js.git"
+  },
+  "keywords": [
+    "import",
+    "export",
+    "compiler",
+    "namespace"
+  ],
+  "author": "ohmed <hot.surnuk@gmail.com> (http://nwgstudios.com/)",
+  "license": "https://raw.github.com/ohmed/ImEx.js/master/LICENSE",
+  "bugs": {
+    "url": "https://github.com/ohmed/ImEx.js/issues"
+  },
+  "homepage": "https://github.com/ohmed/ImEx.js"
+}

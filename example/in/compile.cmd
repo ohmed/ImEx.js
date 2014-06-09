@@ -1,2 +1,2 @@
 cd ./../../src/
-node build.js --include ../example/in/include.json --out ../example/out/build.js
+node imex.js --include ../example/in/include.json --out ../example/out/build.js
